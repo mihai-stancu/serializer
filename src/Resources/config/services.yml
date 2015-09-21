@@ -1,0 +1,60 @@
+services:
+    ms.serializer.encoder.bencode_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\BencodeEncoder
+        tags:
+           - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.bson_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\BsonEncoder
+        tags:
+           - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.cbor_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\CborEncoder
+        tags:
+           - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.igbinary_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\IgbinaryEncoder
+        tags:
+           - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.msgpack_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\MsgpackEncoder
+        tags:
+           - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.php_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\PhpEncoder
+        tags:
+           - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.sereal_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\SerealEncoder
+        tags:
+           - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.smile_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\SmileEncoder
+        tags:
+           - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.tnetstring_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\TNetstringEncoder
+        tags:
+           - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.ubjson_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\UbjsonEncoder
+        tags:
+           - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.var_export_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\VarexportEncoder
+        tags:
+           - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.yaml_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\YamlEncoder
+        tags:
+           - { name: ms.serializer.encoder }
