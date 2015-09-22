@@ -1,2 +1,4 @@
 .idea/
 vendor/
+bench.sq3
+composer.lock

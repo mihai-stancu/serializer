@@ -1,0 +1,106 @@
+services:
+
+    #
+    # Normalizers
+    #
+
+    ms.property_info.extractor.reflection:
+        class: Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor
+
+    ms.property_info.extractor:
+        class: Symfony\Component\PropertyInfo\PropertyInfoExtractor
+        arguments: [ [], [ "@ms.property_info.extractor.reflection" ] ]
+
+    ms.serializer.normalizer.typehint_normalizer:
+        class: MS\SerializerBundle\Serializer\Normalizer\TypehintNormalizer
+        arguments: [ ~, ~, "@ms.property_info.extractor" ]
+        tags:
+            - { name: serializer.normalizer, priority: -200 }
+
+    ms.serializer.normalizer.recursive_normalizer:
+        class: MS\SerializerBundle\Serializer\Normalizer\RecursiveNormalizer
+        arguments: [ ~, ~, "@ms.property_info.extractor" ]
+        tags:
+            - { name: serializer.normalizer, priority: -200 }
+
+    #
+    # Encoders
+    #
+
+    ms.serializer.encoder.bencode_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\BencodeEncoder
+        tags:
+            - { name: serializer.encoder }
+            - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.bson_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\BsonEncoder
+        tags:
+            - { name: serializer.encoder }
+            - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.cbor_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\CborEncoder
+        tags:
+            - { name: serializer.encoder }
+            - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.export_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\ExportEncoder
+        tags:
+            - { name: serializer.encoder }
+            - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.form_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\FormEncoder
+        tags:
+            - { name: serializer.encoder }
+            - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.igbinary_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\IgbinaryEncoder
+        tags:
+            - { name: serializer.encoder }
+            - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.msgpack_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\MsgpackEncoder
+        tags:
+            - { name: serializer.encoder }
+            - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.serialize_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\SerializeEncoder
+        tags:
+            - { name: serializer.encoder }
+            - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.sereal_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\SerealEncoder
+        tags:
+            - { name: serializer.encoder }
+            - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.smile_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\SmileEncoder
+        tags:
+            - { name: serializer.encoder }
+            - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.tnetstring_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\TnetstringEncoder
+        tags:
+            - { name: serializer.encoder }
+            - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.ubjson_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\UbjsonEncoder
+        tags:
+            - { name: serializer.encoder }
+            - { name: ms.serializer.encoder }
+
+    ms.serializer.encoder.yaml_encoder:
+        class: MS\SerializerBundle\Serializer\Encoder\YamlEncoder
+        tags:
+            - { name: serializer.encoder }
+            - { name: ms.serializer.encoder }

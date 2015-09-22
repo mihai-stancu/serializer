@@ -1,5 +1,6 @@
 {
     "name": "mihai-stancu/serializer",
+
     "license": "MIT",
     "type": "library",
 
@@ -14,34 +15,38 @@
     ],
 
     "require": {
-        "php": ">=5.3",
+        "php": "^5.3",
 
-        "symfony/dependency-injection": "2.*",
-        "symfony/serializer": "2.*",
-        "symfony/config": "2.*",
-        "symfony/http-kernel": "2.*"
+        "symfony/dependency-injection": "^2|^3",
+        "symfony/config": "^2|^3",
+        "symfony/http-kernel": "^2|^3",
+        "symfony/serializer": "^2|^3",
+        "symfony/property-info": "^2.8|^3"
     },
     "require-dev": {
-        "phpunit/phpunit": "^4.1"
+        "phpunit/phpunit": "^5",
+        "fzaninotto/faker": "^1"
     },
 
     "suggest": {
-        "ext-igbinary": "For the IGBinary format (Binary PHP serialize/unserialize replacement).",
-        "ext-libsmile": "For the Smile format.",
-        "ext-mongo": "For the BSON format.",
-        "ext-msgpack": "For the MessagePack format.",
+        "ext-igbinary": "^1.2",
+        "ext-mongo": "^1.6",
+        "ext-msgpack": "^0.5",
+        "ext-yaml": "^1.2",
 
-        "rych/bencode": "For the Bencode format.",
-        "2tvenom/cborencode": "For the CBOR format.",
-        "mihai-stancu/sereal": "For the Sereal format.",
-        "phuedx/tnetstring": "For the TNetString format.",
-        "dizews/php-ubjson": "For the UBJSON format.",
-        "symfony/yaml": "For the YAML format."
+        "rych/bencode": "dev-master",
+        "2tvenom/cborencode": "dev-master",
+        "kunststube/rison": "dev-master",
+        "mihai-stancu/sereal": "dev-master",
+        "phuedx/tnetstring": "dev-master",
+        "dizews/php-ubjson": "dev-master",
+        "symfony/yaml": "^2|^3",
+        "zendframework/zend-config": "^2"
     },
 
     "autoload": {
         "psr-4": {
-          "MS\\SerializerBundle\\": "src/"
+          "MS\\SerializerBundle\\": ""
         }
     },
     "config": {
