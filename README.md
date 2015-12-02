@@ -1,10 +1,14 @@
-SerializerBundle
+Serializer
 ================================================================================
 
 Contents
 --------------------------------------------------------------------------------
 
-This bundle groups together serializers for the following encoding formats:
+A recursive normalizer that uses symfony/property-info to deduce data types of elements in an object graph.
+
+A type hinted normalizer that retains type information about the object graph being normalized.
+
+A collection of (symfony compliant) encoders for the following formats:
 
 * [Bencode](http://en.wikipedia.org/wiki/Bencode) as a pure PHP implementation provided by [rych/bencode](http://github.com/rchouinard/bencode).
 * [BSON](http://en.wikipedia.org/wiki/BSON) as a PHP extension provided by the `mongo` extension.

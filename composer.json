@@ -4,8 +4,8 @@
     "license": "MIT",
     "type": "library",
 
-    "description": "",
-    "keywords": ["serialization", "encoders", "marshaling"],
+    "description": "Customized normalizers and a collection of encoders.",
+    "keywords": ["normalize", "serialize", "encode", "marshal"],
 
     "authors": [
         {
@@ -20,6 +20,7 @@
         "symfony/dependency-injection": "^2|^3",
         "symfony/config": "^2|^3",
         "symfony/http-kernel": "^2|^3",
+
         "symfony/serializer": "^2|^3",
         "symfony/property-info": "^2.8|^3"
     },
