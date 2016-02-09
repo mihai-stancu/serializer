@@ -9,12 +9,11 @@
 
 namespace MS\SerializerBundle\Serializer\Normalizer;
 
-use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer as SymfonyArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class MixedDenormalizer implements DenormalizerInterface
 {
-    const FORMAT = '@mixed';
+    const TYPE = '@mixed';
 
     /**
      * @param mixed  $data
@@ -38,7 +37,6 @@ class MixedDenormalizer implements DenormalizerInterface
      */
     public function supportsDenormalization($data, $type, $format = null)
     {
-        return $type === static::FORMAT
-           and $format === static::FORMAT;
+        return $type === static::TYPE;
     }
 }

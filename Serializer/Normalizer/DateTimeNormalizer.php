@@ -13,7 +13,7 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer as SymfonyDateTim
 
 class DateTimeNormalizer extends SymfonyDateTimeNormalizer
 {
-    const FORMAT = MixedDenormalizer::FORMAT;
+    const TYPE = MixedDenormalizer::TYPE;
 
     const REGEX = '
         /^
@@ -63,7 +63,7 @@ class DateTimeNormalizer extends SymfonyDateTimeNormalizer
      */
     public function supportsDenormalization($data, $type, $format = null)
     {
-        return $format === static::FORMAT
+        return $type === static::TYPE
            and is_string($data)
            and preg_match(static::REGEX, $data) > 0;
     }

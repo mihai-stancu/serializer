@@ -10,12 +10,10 @@
 namespace MS\SerializerBundle\Serializer\Normalizer;
 
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer as SymfonyArrayDenormalizer;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\SerializerInterface;
 
 class MixedArrayDenormalizer extends SymfonyArrayDenormalizer
 {
-    const FORMAT = '@mixed[]';
+    const TYPE = '@mixed[]';
 
     /**
      * @param mixed  $data
@@ -26,8 +24,8 @@ class MixedArrayDenormalizer extends SymfonyArrayDenormalizer
      */
     public function supportsDenormalization($data, $type, $format = null)
     {
-        return $type === static::FORMAT
-           and $format === MixedDenormalizer::FORMAT
-           and is_array($data);
+        return $type === static::TYPE
+           and is_array($data)
+           and parent::supportsDenormalization($data, $type, $format);
     }
 }
