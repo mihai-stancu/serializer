@@ -28,9 +28,6 @@ class DateTimeNormalizer extends SymfonyDateTimeNormalizer
         $/x
     ';
 
-    /** @var  string */
-    protected $format;
-
     /**
      * @param mixed  $data
      * @param string $class
@@ -51,7 +48,7 @@ class DateTimeNormalizer extends SymfonyDateTimeNormalizer
         $format .= !empty($parts['zsep']) ? ' ' : '';
         $format .= (!empty($parts['zone']) and $parts['zone'][3] === ':') ? 'P' : 'O';
 
-        return parent::denormalize($data, \DateTime::class, $format, $context);
+        return parent::denormalize($data, 'DateTime', $format, $context);
     }
 
     /**
@@ -63,7 +60,7 @@ class DateTimeNormalizer extends SymfonyDateTimeNormalizer
      */
     public function supportsDenormalization($data, $type, $format = null)
     {
-        return $type === static::TYPE
+        return $type === static::TYPE or $type === 'DateTime'
            and is_string($data)
            and preg_match(static::REGEX, $data) > 0;
     }
