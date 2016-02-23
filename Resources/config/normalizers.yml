@@ -1,0 +1,41 @@
+#
+# Normalizers
+#
+
+services:
+
+    ms.serializer.normalizer.datetime_normalizer:
+        class: MS\SerializerBundle\Serializer\Normalizer\DateTimeNormalizer
+        arguments: [ "Y-m-d H:i:s" ]
+        tags:
+            - { name: serializer.normalizer, priority: -100 }
+
+    ms.serializer.normalizer.typehint_normalizer:
+        class: MS\SerializerBundle\Serializer\Normalizer\TypehintNormalizer
+        arguments: [ ~, ~, "@?ms.property_info.extractor" ]
+        tags:
+            - { name: serializer.normalizer, priority: -200 }
+
+    ms.serializer.normalizer.recursive_normalizer:
+        class: MS\SerializerBundle\Serializer\Normalizer\RecursiveNormalizer
+        arguments: [ ~, ~, "@?ms.property_info.extractor" ]
+        tags:
+            - { name: serializer.normalizer, priority: -200 }
+
+    ms.serializer.normalizer.doctrine_entity_normalizer:
+        class: MS\SerializerBundle\Serializer\Normalizer\DoctrineEntityNormalizer
+        arguments: [ ~, ~, "@?ms.property_info.extractor", "@?doctrine.orm.entity_manager" ]
+        tags:
+            - { name: serializer.normalizer, priority: -100 }
+
+    ms.serializer.normalizer.doctrine_collection_normalizer:
+        class: MS\SerializerBundle\Serializer\Normalizer\DoctrineCollectionNormalizer
+        arguments: [ ~, ~, "@?ms.property_info.extractor", "@?doctrine.orm.entity_manager" ]
+        tags:
+            - { name: serializer.normalizer, priority: -100 }
+
+    ms.serializer.normalizer.doctrine_field_normalizer:
+        class: MS\SerializerBundle\Serializer\Normalizer\DoctrineFieldNormalizer
+        arguments: [ ~, ~, "@?ms.property_info.extractor", "@?doctrine.orm.entity_manager" ]
+        tags:
+            - { name: serializer.normalizer, priority: -100 }

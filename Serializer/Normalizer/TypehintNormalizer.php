@@ -60,18 +60,7 @@ class TypehintNormalizer extends RecursiveNormalizer
             return $data;
         }
 
-        $class = get_class($object);
-        $type = array_search($class, $this->types);
-
-        if ($type) {
-            $data['@type'] = $type;
-
-            return $data;
-        }
-
-        $data['@class'] = $class;
-
-        return $data;
+        return array_merge($this->getHintFromObject($object), $data);
     }
 
     /**
@@ -99,7 +88,7 @@ class TypehintNormalizer extends RecursiveNormalizer
      */
     public function denormalize($data, $class, $format = null, array $context = array())
     {
-        if (!($_class = $this->getClassName($data))) {
+        if (!($_class = $this->getClassFromArray($data))) {
             return parent::denormalize($data, $class, $format, $context);
         }
 
@@ -121,7 +110,7 @@ class TypehintNormalizer extends RecursiveNormalizer
      */
     protected function denormalizeProperty($data, $class, $name, $format = null, array $context = array())
     {
-        if (!($_class = $this->getClassName($data))) {
+        if (!($_class = $this->getClassFromArray($data))) {
             return parent::denormalizeProperty($data, $class, $name, $format, $context);
         }
 
@@ -143,7 +132,7 @@ class TypehintNormalizer extends RecursiveNormalizer
      */
     public function supportsDenormalization($data, $type, $format = null)
     {
-        if (!$this->getClassName($data)) {
+        if (!$this->getClassFromArray($data)) {
             return parent::supportsDenormalization($data, $type, $format);
         }
 
@@ -155,18 +144,43 @@ class TypehintNormalizer extends RecursiveNormalizer
      *
      * @return string
      */
-    protected function getClassName($data)
+    protected function getClassFromArray($data)
     {
         if (!is_array($data)) {
             return;
         }
 
-        if (isset($data['@class']) and class_exists($data['@class'])) {
-            return $data['@class'];
+        if (isset($data['@type']) and $type = $data['@type'] and isset($this->types[$type])) {
+            $class = $this->types[$type];
         }
 
-        if (isset($data['@type']) and $type = $data['@type'] and isset($this->types[$type])) {
-            return $this->types[$type];
+        if (isset($data['@class'])) {
+            $class = $data['@class'];
         }
+
+        if (isset($class) and class_exists($class)) {
+            return $class;
+        }
+    }
+
+    /**
+     * @param object $object
+     *
+     * @return array
+     */
+    protected function getHintFromObject($object)
+    {
+        if (!is_object($object)) {
+            return array();
+        }
+
+        $class = get_class($object);
+        $type = array_search($class, $this->types);
+
+        if ($type) {
+            return array('@type' => $type);
+        }
+
+        return  array('@class' => $class);
     }
 }
