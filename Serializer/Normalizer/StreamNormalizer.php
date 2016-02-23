@@ -10,7 +10,6 @@
 namespace MS\SerializerBundle\Serializer\Normalizer;
 
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
-use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class StreamNormalizer extends BinaryNormalizer
@@ -18,9 +17,9 @@ class StreamNormalizer extends BinaryNormalizer
     const TYPE = '@stream';
 
     /**
-     * @param object|string $stream
-     * @param string        $format
-     * @param array         $context
+     * @param resource $stream
+     * @param string   $format
+     * @param array    $context
      *
      * @return array|bool|float|int|null|string
      */
@@ -52,7 +51,7 @@ class StreamNormalizer extends BinaryNormalizer
      */
     public function denormalize($data, $class, $format = null, array $context = array())
     {
-        $string = parent::denormalize($data, \SplFileObject::class, $format, $context);
+        $string = parent::denormalize($data, 'SplFileObject', $format, $context);
 
         return fopen($string, 'r');
     }
