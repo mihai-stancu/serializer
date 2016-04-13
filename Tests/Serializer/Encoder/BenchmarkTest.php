@@ -101,7 +101,7 @@ class BenchmarkTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->pdo = new \PDO('sqlite:'.__DIR__.'/../bench.sq3');
+        $this->pdo = new \PDO('sqlite:'.__DIR__.'/../../bench.sq3');
 
         $this->pdo->exec(
             '
