@@ -38,12 +38,7 @@ class ParamsDenormalizer implements DenormalizerInterface
         foreach ($params as $param) {
             $index = $param->getPosition();
 
-            $arguments[$index] = $this->serializer->denormalize(
-                $data,
-                ParamDenormalizer::TYPE,
-                $format,
-                ['param' => $param]
-            );
+            $arguments[$index] = $this->denormalizeParam($data, $param, $format, $context);
         }
         ksort($arguments);
 
@@ -57,6 +52,43 @@ class ParamsDenormalizer implements DenormalizerInterface
         }
 
         return $output;
+    }
+
+    /**
+     * @param array                $data
+     * @param \ReflectionParameter $param
+     * @param string               $format
+     * @param array                $context
+     *
+     * @return object
+     */
+    protected function denormalizeParam($data, $param, $format, $context)
+    {
+        $name = $param->getName();
+        $index = $param->getPosition();
+
+        if (array_key_exists($name, $data)) {
+            $value = $data[$name];
+        } elseif (array_key_exists($index, $data)) {
+            $value = $data[$index];
+        } elseif ($param->isDefaultValueAvailable()) {
+            $value = $param->getDefaultValue();
+        } else {
+            $message = sprintf('Missing parameter #%s: %s', $index, $name);
+            throw new \RuntimeException($message);
+        }
+
+        if ($param->getClass()) {
+            $class = $param->getClass()->getName();
+        } elseif ($this->serializer->supportsDenormalization($value, MixedDenormalizer::TYPE, $format)) {
+            $class = MixedDenormalizer::TYPE;
+        }
+
+        if (isset($class)) {
+            $value = $this->serializer->denormalize($value, $class, $format, $context);
+        }
+
+        return $value;
     }
 
     /**
@@ -76,6 +108,8 @@ class ParamsDenormalizer implements DenormalizerInterface
      * @param SerializerInterface $serializer
      *
      * @throws \InvalidArgumentException
+     *
+     * @codeCoverageIgnore
      */
     public function setSerializer(SerializerInterface $serializer)
     {

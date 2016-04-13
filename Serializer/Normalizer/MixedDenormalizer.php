@@ -9,27 +9,53 @@
 
 namespace MS\SerializerBundle\Serializer\Normalizer;
 
+use Doctrine\DBAL\Exception\InvalidArgumentException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\SerializerAwareInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
-class MixedDenormalizer implements DenormalizerInterface
+class MixedDenormalizer implements DenormalizerInterface, SerializerAwareInterface
 {
     const TYPE = '@mixed';
 
+    /** @var  SerializerInterface|DenormalizerInterface */
+    protected $serializer;
+
     /**
-     * @param mixed  $data
+     * @param array  $values
      * @param string $class
      * @param string $format
      * @param array  $context
      *
-     * @return mixed
+     * @return array|object
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($values, $class, $format = null, array $context = array())
     {
-        return $data;
+        if (!is_array($values)) {
+            return $values;
+        }
+
+        $filtered = array_filter(
+            $values,
+            function ($value) use ($class, $format) {
+                return $this->serializer->supportsDenormalization($value, $class, $format);
+            }
+        );
+
+        if (count($filtered) !== count($values)) {
+            throw new \InvalidArgumentException('Not all values within the array can be denormalized.');
+        }
+
+        return array_map(
+            function ($value) use ($class, $format, $context) {
+                return $this->serializer->denormalize($value, $class, $format, $context);
+            },
+            $filtered
+        );
     }
 
     /**
-     * @param mixed  $data
+     * @param array  $data
      * @param string $type
      * @param string $format
      *
@@ -37,6 +63,30 @@ class MixedDenormalizer implements DenormalizerInterface
      */
     public function supportsDenormalization($data, $type, $format = null)
     {
-        return $type === static::TYPE;
+        if ($type !== static::TYPE) {
+            return false;
+        }
+
+        if (!is_null($data) and !is_scalar($data) and !is_resource($data) and !is_array($data)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param SerializerInterface $serializer
+     *
+     * @throws InvalidArgumentException
+     *
+     * @codeCoverageIgnore
+     */
+    public function setSerializer(SerializerInterface $serializer)
+    {
+        if (!$serializer instanceof DenormalizerInterface) {
+            throw new InvalidArgumentException('Expected a serializer that also implements DenormalizerInterface.');
+        }
+
+        $this->serializer = $serializer;
     }
 }

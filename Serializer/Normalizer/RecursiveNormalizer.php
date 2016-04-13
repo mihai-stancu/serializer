@@ -175,6 +175,7 @@ class RecursiveNormalizer extends GetSetMethodNormalizer
         $object = $this->instantiateObject($normalizedData, $class, $subcontext, $reflectionClass, $allowedAttributes);
 
         $classMethods = get_class_methods($object);
+
         foreach ($normalizedData as $attribute => $value) {
             if ($this->nameConverter) {
                 $attribute = $this->nameConverter->denormalize($attribute);

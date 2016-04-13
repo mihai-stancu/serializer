@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * Copyright (c) 2015 Mihai Stancu <stancu.t.mihai@gmail.com>
+ *
+ * This source file is subject to the license that is bundled with this source
+ * code in the LICENSE.md file.
+ */
+
 namespace MS\SerializerBundle\Tests\Serializer\Normalizer;
 
 use MS\SerializerBundle\Serializer\Normalizer\StreamNormalizer;
@@ -68,23 +75,4 @@ class StreamNormalizerTest extends \PHPUnit_Framework_TestCase
         $actualStream = $this->normalizer->denormalize($dataUri, StreamNormalizer::TYPE, null, $context);
         $this->assertEquals(stream_get_contents($stream), stream_get_contents($actualStream));
     }
-
-    /*public function invalidData()
-    {
-        return [
-        ];
-    }*/
-
-    /**
-     * @dataProvider invalidData
-     *
-     * @param string $binary
-     * @param string $dataUri
-     * @param array  $context
-     *
-     * @expectedException \InvalidArgumentException
-     */
-    /*public function testDenormalizationException($binary, $dataUri, $context)
-    {
-    }*/
 }

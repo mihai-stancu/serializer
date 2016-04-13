@@ -15,7 +15,7 @@ class StreamNormalizer extends BinaryNormalizer
 
     protected static $types = [
         self::TYPE,
-        MixedDenormalizer::TYPE
+        MixedDenormalizer::TYPE,
     ];
 
     /**
@@ -33,8 +33,8 @@ class StreamNormalizer extends BinaryNormalizer
     }
 
     /**
-     * @param resource  $data
-     * @param string    $format
+     * @param resource $data
+     * @param string   $format
      *
      * @return bool
      */
@@ -44,7 +44,7 @@ class StreamNormalizer extends BinaryNormalizer
     }
 
     /**
-     * @param string  $data
+     * @param string $data
      * @param string $class
      * @param string $format
      * @param array  $context

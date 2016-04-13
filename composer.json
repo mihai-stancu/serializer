@@ -21,7 +21,7 @@
         "symfony/config": "^2|^3",
         "symfony/http-kernel": "^2|^3",
 
-        "symfony/serializer": "^2|^3",
+        "symfony/serializer": "^2|^3|^3@dev",
         "symfony/property-info": "^2.8|^3"
     },
     "require-dev": {
