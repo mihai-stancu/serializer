@@ -9,12 +9,14 @@
 
 namespace MS\SerializerBundle\Serializer\Normalizer;
 
-use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
-use Symfony\Component\Serializer\SerializerInterface;
-
 class StreamNormalizer extends BinaryNormalizer
 {
     const TYPE = '@stream';
+
+    protected static $types = [
+        self::TYPE,
+        MixedDenormalizer::TYPE
+    ];
 
     /**
      * @param resource $stream
@@ -31,8 +33,8 @@ class StreamNormalizer extends BinaryNormalizer
     }
 
     /**
-     * @param mixed  $data
-     * @param string $format
+     * @param resource  $data
+     * @param string    $format
      *
      * @return bool
      */
@@ -42,18 +44,18 @@ class StreamNormalizer extends BinaryNormalizer
     }
 
     /**
-     * @param mixed  $data
+     * @param string  $data
      * @param string $class
      * @param string $format
      * @param array  $context
      *
-     * @return \SplFileObject
+     * @return resource
      */
     public function denormalize($data, $class, $format = null, array $context = array())
     {
-        $string = parent::denormalize($data, 'SplFileObject', $format, $context);
+        $string = parent::denormalize($data, $class, $format, $context);
 
-        return fopen($string, 'r');
+        return fopen('data:,'.$string, 'r');
     }
 
     /**
@@ -68,19 +70,5 @@ class StreamNormalizer extends BinaryNormalizer
         return in_array($type, static::$types)
            and is_string($data)
            and preg_match(static::SIMPLE_REGEX, $data, $M) > 0;
-    }
-
-    /**
-     * @param SerializerInterface $serializer
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function setSerializer(SerializerInterface $serializer)
-    {
-        if (!$serializer instanceof DenormalizerInterface) {
-            throw new \InvalidArgumentException('Expected a serializer that also implements DenormalizerInterface.');
-        }
-
-        $this->serializer = $serializer;
     }
 }

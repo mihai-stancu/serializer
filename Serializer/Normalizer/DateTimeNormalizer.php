@@ -9,11 +9,15 @@
 
 namespace MS\SerializerBundle\Serializer\Normalizer;
 
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer as SymfonyDateTimeNormalizer;
+use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class DateTimeNormalizer extends SymfonyDateTimeNormalizer
+class DateTimeNormalizer implements NormalizerInterface, DenormalizerInterface
 {
-    const TYPE = MixedDenormalizer::TYPE;
+    const TYPE = '@datetime';
+
+    const CONTEXT_FORMAT = 'datetime_format';
 
     const REGEX = '
         /^
@@ -28,8 +32,59 @@ class DateTimeNormalizer extends SymfonyDateTimeNormalizer
         $/x
     ';
 
+    protected static $classes = [
+        \DateTimeInterface::class,
+        \DateTime::class,
+        \DateTimeImmutable::class,
+    ];
+
+    protected static $types = [
+        self::TYPE,
+        MixedDenormalizer::TYPE,
+    ];
+
+    /** @var  string */
+    protected $format;
+
     /**
-     * @param mixed  $data
+     * @param string $format
+     */
+    public function __construct($format = \DateTime::ISO8601)
+    {
+        $this->format = $format;
+    }
+
+    /**
+     * @param object $object
+     * @param string $format
+     * @param array  $context
+     *
+     * @return string
+     */
+    public function normalize($object, $format = null, array $context = array())
+    {
+        if (!$object instanceof \DateTimeInterface) {
+            throw new InvalidArgumentException('The object must implement the "\DateTimeInterface".');
+        }
+
+        $format = isset($context[static::CONTEXT_FORMAT]) ? $context[self::CONTEXT_FORMAT] : $this->format;
+
+        return $object->format($format);
+    }
+
+    /**
+     * @param object $data
+     * @param string $format
+     *
+     * @return bool
+     */
+    public function supportsNormalization($data, $format = null)
+    {
+        return $data instanceof \DateTimeInterface;
+    }
+
+    /**
+     * @param string $data
      * @param string $class
      * @param string $format
      * @param array  $context
@@ -46,9 +101,14 @@ class DateTimeNormalizer extends SymfonyDateTimeNormalizer
         $format .= !empty($parts['time']) ? 'H:i:s' : '';
         $format .= !empty($parts['usec']) ? '.u' : '';
         $format .= !empty($parts['zsep']) ? ' ' : '';
-        $format .= (!empty($parts['zone']) and $parts['zone'][3] === ':') ? 'P' : 'O';
+        $format .= !empty($parts['zone']) ? (($parts['zone'][3] === ':') ? 'P' : 'O') : '';
 
-        return parent::denormalize($data, 'DateTime', $format, $context);
+        $object = \DateTime::createFromFormat($format, $data);
+        if ($object === false) {
+            throw new \InvalidArgumentException('The provided data or format are not valid.');
+        }
+
+        return $object;
     }
 
     /**
@@ -60,8 +120,7 @@ class DateTimeNormalizer extends SymfonyDateTimeNormalizer
      */
     public function supportsDenormalization($data, $type, $format = null)
     {
-        return $type === static::TYPE or $type === 'DateTime'
-           and is_string($data)
-           and preg_match(static::REGEX, $data) > 0;
+        return in_array($type, static::$classes) or in_array($type, static::$types)
+           and is_string($data) and preg_match(static::REGEX, $data) > 0;
     }
 }

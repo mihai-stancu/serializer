@@ -11,13 +11,17 @@ namespace MS\SerializerBundle\Serializer\Normalizer;
 
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\SerializerAwareInterface;
-use Symfony\Component\Serializer\SerializerInterface;
 
-class BinaryNormalizer implements NormalizerInterface, DenormalizerInterface, SerializerAwareInterface
+class BinaryNormalizer implements NormalizerInterface, DenormalizerInterface
 {
     const TYPE = '@binary';
+
+    const CONTEXT_MIME = 'binary_mime';
+    const CONTEXT_CHARSET = 'binary_charset';
+    const CONTEXT_GZIP = 'binary_gzip';
+    const CONTEXT_BASE64 = 'binary_base64';
+    const CONTEXT_URLENCODE = 'binary_urlencode';
+    const CONTEXT_DATA = 'binary_data';
 
     const SIMPLE_REGEX = '
         /^
@@ -45,24 +49,25 @@ class BinaryNormalizer implements NormalizerInterface, DenormalizerInterface, Se
         /^
             data:
             (?:
-                (?P<mime>
+                (?P<binary_mime>
                     [-.+\w]++
                     \/
                     [-.+\w]++
                 )
                 (?:
                     ;
-                    charset=(?P<charset>[-.+\w]++)
+                    charset=(?P<binary_charset>[-.+\w]++)
                 )?
             )?
             (?:
                 ;
-                (?P<base64>base64)
+                (?P<binary_base64>base64)
             )?
             ,
-            (?P<data>
+            (?P<binary_data>
                 [a-z0-9\!\$\&\\\\\'\,\(\)\*\+\,\;\=\-\.\_\~\:\@\/\?\%\s]*+\s*+
             )
+            \Z
         /xi
     ';
 
@@ -70,9 +75,6 @@ class BinaryNormalizer implements NormalizerInterface, DenormalizerInterface, Se
         self::TYPE,
         MixedDenormalizer::TYPE,
     ];
-
-    /** @var  Serializer */
-    protected $serializer;
 
     /**
      * @param object|string $string
@@ -83,29 +85,34 @@ class BinaryNormalizer implements NormalizerInterface, DenormalizerInterface, Se
      */
     public function normalize($string, $format = null, array $context = array())
     {
-        $mime = !empty($context['mime']) ? $context['mime'] : 'application/octet-stream';
-        $charset = !empty($context['charset']) ? $context['charset'] : null;
-        $gzip = !empty($context['gzip']) ? $context['gzip'] : null;
-        $base64 = !empty($context['base64']) ? $context['base64'] : null;
-        $urlencode = !empty($context['urlencode']) ? $context['urlencode'] : null;
+        $mime = isset($context[static::CONTEXT_MIME]) ? $context[static::CONTEXT_MIME] : 'application/octet-stream';
+        $charset = isset($context[static::CONTEXT_CHARSET]) ? $context[static::CONTEXT_CHARSET] : null;
+        $gzip = isset($context[static::CONTEXT_GZIP]) ? $context[static::CONTEXT_GZIP] : null;
+        $base64 = isset($context[static::CONTEXT_BASE64]) ? $context[static::CONTEXT_BASE64] : null;
+        $base64 = ($base64 !== null) ? $base64 : strpos($mime, '/octet-stream') !== false;
+        $urlencode = isset($context[static::CONTEXT_URLENCODE]) ? $context[static::CONTEXT_URLENCODE] : null;
+        $urlencode = ($urlencode !== null) ? $urlencode : strpos($mime, 'text/') !== false;
 
         if ($gzip) {
             $string = gzencode($string);
             $mime = 'application/x-gzip';
-            $base64 = true;
         }
-        if ($base64) {
-            $string = base64_encode($string);
-            $base64 = 'base64';
-        }
-        if ($urlencode or (strpos($mime, 'text/') === 0 and !$base64)) {
+        if ($urlencode and !$base64) {
             $string = urlencode($string);
         }
+        if ($base64 or !$urlencode) {
+            $string = base64_encode($string);
+        }
 
-        $options = [$mime, $charset, $base64];
-        $options = array_filter($options);
+        $options = $mime;
+        if ($charset and $mime) {
+            $options .= ';charset='.$charset;
+        }
+        if ($base64) {
+            $options .= ';base64';
+        }
 
-        return sprintf('data:%s,%s', implode(';', $options), $string);
+        return sprintf('data:%s,%s', $options, $string);
     }
 
     /**
@@ -133,13 +140,13 @@ class BinaryNormalizer implements NormalizerInterface, DenormalizerInterface, Se
             throw new \InvalidArgumentException('The provided "data:" URI is not valid.');
         }
 
-        $mime = !empty($matches['mime']) ? $matches['mime'] : 'application/octet-stream';
-        $charset = !empty($matches['charset']) ? $matches['charset'] : null;
-        $gzip = ($mime === 'application/gzip');
-        $base64 = !empty($matches['base64']) ? $matches['base64'] : null;
-        $urldecode = (strpos($mime, 'text/') === 0 and !$base64);
+        $mime = !empty($matches[static::CONTEXT_MIME]) ? $matches[static::CONTEXT_MIME] : 'application/octet-stream';
+        $charset = !empty($matches[static::CONTEXT_CHARSET]) ? $matches[static::CONTEXT_CHARSET] : null;
+        $gzip = strpos($mime, 'gzip') !== false;
+        $base64 = !empty($matches[static::CONTEXT_BASE64]) ? $matches[static::CONTEXT_BASE64] : null;
+        $urldecode = strpos($mime, 'text/') !== false;
 
-        $string = $matches['data'];
+        $string = $matches[static::CONTEXT_DATA];
 
         if ($base64) {
             $string = base64_decode($string);
@@ -147,8 +154,8 @@ class BinaryNormalizer implements NormalizerInterface, DenormalizerInterface, Se
         if ($gzip) {
             $string = gzdecode($string);
         }
-        if ($urldecode) {
-            $string = urlencode($string);
+        if ($urldecode or !$base64) {
+            $string = urldecode($string);
         }
 
         return $string;
@@ -165,19 +172,5 @@ class BinaryNormalizer implements NormalizerInterface, DenormalizerInterface, Se
     {
         return in_array($type, static::$types)
            and is_string($data) and preg_match(static::SIMPLE_REGEX, $data) > 0;
-    }
-
-    /**
-     * @param SerializerInterface $serializer
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function setSerializer(SerializerInterface $serializer)
-    {
-        if (!$serializer instanceof DenormalizerInterface) {
-            throw new \InvalidArgumentException('Expected a serializer that also implements DenormalizerInterface.');
-        }
-
-        $this->serializer = $serializer;
     }
 }
