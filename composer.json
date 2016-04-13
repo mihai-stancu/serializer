@@ -22,15 +22,24 @@
         "symfony/http-kernel": "^2|^3",
 
         "symfony/serializer": "^2|^3",
-        "symfony/property-info": "^2.8|^3",
-
-        "doctrine/orm": "^2|^3"
+        "symfony/property-info": "^2.8|^3"
     },
     "require-dev": {
         "php": ">=5.5",
 
         "phpunit/phpunit": "^5",
-        "fzaninotto/faker": "^1"
+        "fzaninotto/faker": "^1",
+
+        "rych/bencode": "dev-master@dev",
+        "2tvenom/cborencode": "dev-master@dev",
+        "kunststube/rison": "dev-master@dev",
+        "mihai-stancu/sereal": "dev-master@dev",
+        "phuedx/tnetstring": "dev-master@dev",
+        "dizews/php-ubjson": "dev-master@dev",
+        "symfony/yaml": "^2|^3",
+        "zendframework/zend-config": "^2",
+
+        "doctrine/orm": "^2|^3"
     },
 
     "suggest": {
