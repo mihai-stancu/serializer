@@ -1,4 +1,5 @@
 .idea/
 vendor/
-bench.sq3
+Tests/.coverage/
+Tests/bench.sq3
 composer.lock
