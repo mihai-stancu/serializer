@@ -132,8 +132,8 @@ class TypehintNormalizer extends RecursiveNormalizer
      */
     public function supportsDenormalization($data, $type, $format = null)
     {
-        if (!$this->getClassFromArray($data)) {
-            return parent::supportsDenormalization($data, $type, $format);
+        if (!($class = $this->getClassFromArray($data))) {
+            return parent::supportsDenormalization($data, $type ?: $class, $format);
         }
 
         return true;
