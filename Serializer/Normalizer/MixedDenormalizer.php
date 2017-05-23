@@ -63,7 +63,7 @@ class MixedDenormalizer implements DenormalizerInterface, SerializerAwareInterfa
      */
     public function supportsDenormalization($data, $type, $format = null)
     {
-        if ($type !== static::TYPE) {
+        if ($type !== static::TYPE and !empty($context['@mixed'])) {
             return false;
         }
 
