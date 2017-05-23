@@ -137,24 +137,31 @@ class RecursiveNormalizer extends GetSetMethodNormalizer
         }
 
         /** @var Type[] $types */
-        $types = $this->propertyInfoExtractor->getTypes($class, $name);
+        $types = (array) $this->propertyInfoExtractor->getTypes($class, $name);
+        $_class = null;
+        $_class = array_reduce(
+            $types,
+            function($class, Type $type) {
+                return $class ?: $type->getClassName();
+            },
+            $_class
+        );
 
-        if (empty($types)) {
+        if ($data === null and $_class === null) {
             return $data;
         }
 
-        foreach ($types as $type) {
-            if ($data === null && $type->isNullable()) {
-                return $data;
-            }
-
-            if (!$this->serializer instanceof DenormalizerInterface) {
-                $message = 'Cannot denormalize attribute "%s" because injected serializer is not a denormalizer';
-                throw new RuntimeException(sprintf($message, $name));
-            }
-
-            return $this->serializer->denormalize($data, $type->getClassName(), $format, $context);
+        if (!$this->serializer instanceof DenormalizerInterface) {
+            $message = 'Cannot denormalize attribute "%s" because injected serializer is not a denormalizer';
+            throw new RuntimeException(sprintf($message, $name));
         }
+
+        if ($_class === null
+            or !$this->serializer->supportsDenormalization($data, $_class, $format, $context)) {
+            return $data;
+        }
+
+        return $this->serializer->denormalize($data, $_class, $format, $context);
     }
 
     /**
