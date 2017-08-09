@@ -50,7 +50,7 @@ class RecursiveNormalizer extends GetSetMethodNormalizer
      *
      * @return object
      */
-    protected function instantiateObject(array $data, $class, array &$context, \ReflectionClass $reflectionClass, $allowedAttributes)
+    protected function instantiateObject(array &$data, $class, array &$context, \ReflectionClass $reflectionClass, $allowedAttributes)
     {
         if (
             isset($context['object_to_populate']) &&
